@@ -208,7 +208,7 @@ class BrushTask(object):
                                            site_info=site_info):
             return
 
-        rss_result = self.rsshelper.parse_rssxml(url=rss_url, proxy=site_proxy)
+        rss_result = self.rsshelper.parse_rssxml_new(url=rss_url, proxy=site_proxy, apk_key = apikey) #解析RSS订阅URL，获取RSS中的种子信息
         if rss_result is None:
             # RSS链接过期
             log.error(f"【Brush】{task_name} RSS链接已过期，请重新获取！")
@@ -260,6 +260,7 @@ class BrushTask(object):
                                              ua=ua,
                                              apikey=apikey,
                                              proxy=site_proxy):
+                    log.info("【Brush】%s 不符合选种规则" % torrent_name)
                     continue
                 # 检查能否添加当前种子，判断是否超过保种体积大小
                 if not self.__is_allow_new_torrent(taskinfo=taskinfo,
@@ -268,6 +269,7 @@ class BrushTask(object):
                                                    current_site_count=current_site_count,
                                                    current_site_dlcount=current_site_dlcount,
                                                    site_info=site_info):
+                    log.info("【Brush】%s 超过保种体积大小" % torrent_name)
                     continue
                 # 检查是否已处理过
                 if self.is_torrent_handled(enclosure=enclosure):
@@ -285,6 +287,7 @@ class BrushTask(object):
                     success_count += 1
                     # 添加种子后不能超过最大下载数量
                     if max_dlcount and success_count >= new_torrent_count:
+                        log.info("【Brush】添加种子后不能超过最大下载数量")
                         break
 
                     # 再判断一次
@@ -293,10 +296,13 @@ class BrushTask(object):
                                                        current_site_count=current_site_count,
                                                        current_site_dlcount=current_site_dlcount,
                                                        site_info=site_info):
+                        log.info("【Brush】添加种子后不能超过保种体积大小")
                         break
                     self._torrents_cache.append(enclosure)
             except Exception as err:
                 ExceptionUtils.exception_traceback(err)
+                # 记录到错误日志
+                log.error("【Brush】%s 下载失败：%s" % (torrent_name, str(err)))
                 continue
         log.info("【Brush】任务 %s 本次添加了 %s 个下载" % (task_name, success_count))
 
@@ -772,20 +778,25 @@ class BrushTask(object):
                             return False
                         if rule_sizes[0] == "bw" and not float(min_size) * 1024 ** 3 < float(torrent_size) < float(
                                 max_size) * 1024 ** 3:
+                            log.debug("【Brush】%s `判断种子大小, 判断条件: left:%s %s size:%s %s right:%s" % (
+                                title, min_size, rule_sizes[0], torrent_size, rule_sizes[0], max_size))
                             return False
 
             # 检查包含规则
             if rss_rule.get("include"):
                 if not re.search(r"%s" % rss_rule.get("include"), title):
+                    log.debug("【Brush】%s `不包含关键字，跳过" % title)
                     return False
 
             # 检查排除规则
             if rss_rule.get("exclude"):
                 if re.search(r"%s" % rss_rule.get("exclude"), title):
+                    log.debug("【Brush】%s `包含排除关键字，跳过" % title)
                     return False
 
             # 站点流控
             if self.sites.check_ratelimit(siteid):
+                log.debug("【Brush】%s `站点流控，跳过" % title)
                 return False
 
             torrent_attr = self.siteconf.check_torrent_attr(torrent_url=torrent_url,

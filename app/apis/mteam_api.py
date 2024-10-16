@@ -283,7 +283,7 @@ class MTeamApi:
                 ret_attr["free"] = True
                 ret_attr["downloadvolumefactor"] = 0
                 ret_attr["uploadvolumefactor"] = 1.0
-            # log.info(f"【SiteConf】获取馒头种子{torrentid}属性成功: {ret_attr}")
+            log.info(f"【SiteConf】获取馒头种子{torrentid}属性成功: {ret_attr}")
         elif res is not None:
             log.warn(f"【MTeanApi】 获取馒头种子{torrentid}属性失败，错误码：{res.status_code}")
         else:

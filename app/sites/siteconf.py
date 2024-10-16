@@ -121,7 +121,7 @@ class SiteConf:
             return ret_attr
         domain = StringUtils.get_url_domain(torrent_url)
         if 'm-team' in domain:
-            return MTeamApi.check_torrent_attr(torrent_url, ua, apikey, proxy)
+            return MTeamApi.check_torrent_attr(torrent_url, ua, apikey, proxy) # M-Team站点特殊处理
         xpath_strs = self.get_grap_conf(torrent_url)
         if not xpath_strs:
             return ret_attr

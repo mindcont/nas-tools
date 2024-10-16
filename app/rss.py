@@ -131,7 +131,7 @@ class Rss:
                     site_order = 100 - int(site_info.get("pri"))
                 else:
                     site_order = 0
-                rss_acticles = self.rsshelper.parse_rssxml(url=rss_url)
+                rss_acticles = self.rsshelper.parse_rssxml(url=rss_url) #解析RSS订阅URL，获取RSS中的种子信息， 2024.10.16
                 if rss_acticles is None:
                     # RSS链接过期
                     log.error(f"【Rss】站点 {site_name} RSS链接已过期，请重新获取！")
