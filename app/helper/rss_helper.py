@@ -108,10 +108,11 @@ class RssHelper:
 
         # 判断apikey是否存在
         if not api_key:
-            log.error("【crawl_homepage】 没有配置API_KEY")
+            log.info("【crawl_homepage】 没有配置API_KEY")
             return []
 
         params = {"mode": "movie", "categories": [], "visible": 1, "pageNumber": 1, "pageSize": 100}
+        log.info(f"【crawl_homepage】 开始爬取首页资源，url: {url} api_key: {api_key} proxy: {proxy}")
         res = RequestUtils(
             headers={
                 'x-api-key': api_key,
@@ -151,6 +152,9 @@ class RssHelper:
                 # 发布日期
                 pubdate = StringUtils.timestamp_to_date(result.get('lastModifiedDate'))
 
+                # 打印title 、enclosure、size、description、link、pubdate
+                log.info(f"【crawl_homepage】 title: {title} enclosure: {enclosure} size: {size} description: {description} link: {link} pubdate: {pubdate}")
+
                 # 返回对象
                 tmp_dict = {'title': title,
                             'enclosure': enclosure,
@@ -162,10 +166,10 @@ class RssHelper:
 
 
         elif res is not None:
-            log.warn(f"【crawl_homepage】 首页爬取，错误码：{res.status_code}")
+            log.info(f"【crawl_homepage】 首页爬取，错误码：{res.status_code}")
             return  []
         else:
-            log.warn(f"【crawl_homepage】 首页爬取，无法连接 ")
+            log.info(f"【crawl_homepage】 首页爬取，无法连接 ")
             return  []
         return ret_array
 
@@ -182,10 +186,10 @@ class RssHelper:
         # 判断是否m-team
         if not url or not contains_mteam(url):
             log.info("【crawl_homepage】 不是m-team网站, 沿用之前rss订阅解析的方法")
-            RssHelper.parse_rssxml(url, proxy)
+            return RssHelper.parse_rssxml(url, proxy)
         else:
             log.info("【crawl_homepage】 是m-team网站")
-            RssHelper.crawl_homepage(url, apk_key, proxy)
+            return RssHelper.crawl_homepage(url, apk_key, proxy)
 
     @DbPersist(_db)
     def insert_rss_torrents(self, media_info):
