@@ -126,7 +126,7 @@ class RssHelper:
         ret_array = [] # 保存结果
         if res and res.status_code == 200:
             results = res.json().get('data', {}).get("data") or []
-            for result in results:
+            for i, result in enumerate(results):
                 torrentid = int(result.get('id'))
                 status = result.get('status')
 
@@ -142,18 +142,22 @@ class RssHelper:
                 # 种子名
                 title = result.get('name')
                 # 种子链接
-                enclosure = "https://kp.m-team.cc/detail/{}".format(torrentid),  # 种子详情页
+                enclosure = "https://kp.m-team.cc/detail/{}".format(str(torrentid))  # 种子详情页
                 # 种子大小
-                size = result.get('size')
+                size = int(result.get('size'))
                 # 描述
                 description = result.get('smallDescr')
                 # 种子页面
-                link = "https://kp.m-team.cc/detail/{}".format(torrentid),  # 种子详情页
+                link = "https://kp.m-team.cc/detail/{}".format(str(torrentid))  # 种子详情页
                 # 发布日期
-                pubdate = StringUtils.timestamp_to_date(result.get('lastModifiedDate'))
+                pubdate_str = StringUtils.timestamp_to_date(result.get('lastModifiedDate'))
+                pubdate = StringUtils.get_time_stamp(pubdate_str)
 
-                # 打印title 、enclosure、size、description、link、pubdate
-                log.info(f"【crawl_homepage】 title: {title} enclosure: {enclosure} size: {size} description: {description} link: {link} pubdate: {pubdate}")
+                # free类型
+                discount = status.get('discount')
+
+                # 打印title 、enclosure、size、description、link、pubdate， discount
+                log.info(f"【crawl_homepage】 序号：{i+1}，title: {title} enclosure: {enclosure} size: {size} description: {description} link: {link} pubdate: {pubdate} discount: {discount}  ")
 
                 # 返回对象
                 tmp_dict = {'title': title,
