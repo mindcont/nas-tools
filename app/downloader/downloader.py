@@ -316,16 +316,17 @@ class Downloader:
         if torrent_file:
             # 有种子文件时解析种子信息
             url = os.path.basename(torrent_file)
-            log.info(f"【Downloader】有种子文件时解析种子信息：%s" % (url))
+            log.info(f"【Downloader】有种子,解析种子信息：%s" % (url))
             content, dl_files_folder, dl_files, retmsg = Torrent().read_torrent_content(torrent_file)
         else:
             # 没有种子文件解析链接
             url = media_info.enclosure
-            log.info(f"【Downloader】没有种子文件解析链接：%s" % (url))
+            log.info(f"【Downloader】无种子文件，解析种子链接：%s" % (url))
             if not url:
                 base_url = StringUtils.get_base_url(page_url)
-                log.info(f"【Downloader】下载器检查馒头下载地址：%s" % (page_url))
+                log.info(f"【Downloader】无种子文件，解析种子链接, 页面地址：%s" % (page_url))
                 if "m-team" in base_url:
+                    log.info(f"【Downloader】无种子文件，解析种子链接，馒头特殊处理：%s" % (base_url))
                     site_info = self.sites.get_sites_by_url_domain(base_url)
                     url = MTeamApi.get_torrent_url_by_detail_url(base_url, page_url, site_info) # 获取种子下载地址
             if not url:

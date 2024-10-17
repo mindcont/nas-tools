@@ -153,10 +153,19 @@ class BrushTask(object):
         """
         检查RSS并添加下载，由定时服务调用
         :param taskid: 刷流任务的ID
+
+
+        调用路径，app/brush/brush.py
+
+         check_task_rss
+         1、获取任务信息，通过taskinfo
+         2、获取下载器配置
+         3、解析RSS订阅URL，获取RSS中的种子信息，rss_result， 对于馒头特殊处理 parse_rssxml_new
+         4、遍历种子列表， 并进行合法性判断，添加下载任务
         """
         if not taskid:
             return
-        # 任务信息
+        # 1、任务信息
         taskinfo = self.get_brushtask_info(taskid)
         if not taskinfo:
             return
@@ -194,7 +203,7 @@ class BrushTask(object):
         if rss_free and not apikey and not cookie:
             log.warn("【Brush】站点 %s 未配置Cookie或Api-Key，无法开启促销刷流" % site_name)
             return
-        # 下载器参数
+        # 2、下载器参数
         downloader_cfg = self.downloader.get_downloader_conf(downloader_id)
         if not downloader_cfg:
             log.error("【Brush】任务 %s 下载器不存在，无法刷流！" % task_name)
@@ -208,8 +217,8 @@ class BrushTask(object):
                                            current_site_dlcount=rss_rule.get("current_site_dlcount"),
                                            site_info=site_info):
             return
-
-        rss_result = self.rsshelper.parse_rssxml_new(url=rss_url, proxy=site_proxy, apk_key = apikey) #解析RSS订阅URL，获取RSS中的种子信息
+        # 3、解析RSS订阅URL，获取RSS中的种子信息
+        rss_result = self.rsshelper.parse_rssxml_new(url=rss_url, proxy=site_proxy, apk_key = apikey, site_info = site_info) #解析RSS订阅URL，获取RSS中的种子信息
         if rss_result is None:
             # RSS链接过期
             log.error(f"【Brush】{task_name} RSS链接已过期，请重新获取！")
@@ -232,7 +241,7 @@ class BrushTask(object):
         current_site_count = rss_rule.get("current_site_count")
         # 当前站点下载任务数
         current_site_dlcount = rss_rule.get("current_site_dlcount")
-
+        # 4、遍历种子列表， 并进行合法性判断，添加下载任务
         for res in rss_result:
             try:
                 # 种子名
@@ -305,6 +314,9 @@ class BrushTask(object):
                 # 记录到错误日志
                 log.error("【Brush】%s 下载失败：%s" % (torrent_name, str(err)))
                 continue
+            # 延时 100毫秒
+            time.sleep(0.1)
+
         log.info("【Brush】任务 %s 本次添加了 %s 个下载" % (task_name, success_count))
 
     def remove_tasks_torrents(self):

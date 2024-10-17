@@ -1,6 +1,7 @@
 import xml.dom.minidom
 
 import log
+from app.apis import MTeamApi
 from app.db import MainDb, DbPersist
 from app.db.models import RSSTORRENTS
 from app.utils import RssTitleUtils, StringUtils, RequestUtils, ExceptionUtils, DomUtils
@@ -98,7 +99,7 @@ class RssHelper:
         return ret_array
 
     @staticmethod
-    def crawl_homepage(url,api_key, proxy=False):
+    def crawl_homepage(url, api_key, proxy=False,site_info=None):
         """
         扫描馒头首页前100个资源，并返回RSS信息
         :param url: RSS地址
@@ -109,6 +110,11 @@ class RssHelper:
         # 判断apikey是否存在
         if not api_key:
             log.info("【crawl_homepage】 没有配置API_KEY")
+            return []
+
+        # 判断site_info是否存在
+        if not site_info:
+            log.info("【crawl_homepage】 没有配置site_info")
             return []
 
         params = {"mode": "movie", "categories": [], "visible": 1, "pageNumber": 1, "pageSize": 100}
@@ -129,7 +135,6 @@ class RssHelper:
             for i, result in enumerate(results):
                 torrentid = int(result.get('id'))
                 status = result.get('status')
-
                 # 样例数据格式
                 # {
                 #     'title': '[AV(無碼)/HD Uncensored]RAS-0286 RAS-0280 ID5249 ID5233 ID5245[U3C3][皇家华人 爱豆传媒 杏吧][4.12 GB][N/A]',
@@ -141,14 +146,14 @@ class RssHelper:
                 #     }
                 # 种子名
                 title = result.get('name')
-                # 种子链接
-                enclosure = "https://kp.m-team.cc/detail/{}".format(str(torrentid))  # 种子详情页
                 # 种子大小
                 size = int(result.get('size'))
                 # 描述
                 description = result.get('smallDescr')
                 # 种子页面
                 link = "https://kp.m-team.cc/detail/{}".format(str(torrentid))  # 种子详情页
+                # 种子文件地址
+                enclosure = MTeamApi.get_torrent_url_by_detail_url(link, link, site_info)
                 # 发布日期
                 pubdate_str = StringUtils.timestamp_to_date(result.get('lastModifiedDate'))
                 pubdate = StringUtils.get_time_stamp(pubdate_str)
@@ -157,7 +162,7 @@ class RssHelper:
                 discount = status.get('discount')
 
                 # 打印title 、enclosure、size、description、link、pubdate， discount
-                log.info(f"【crawl_homepage】 序号：{i+1}，title: {title} enclosure: {enclosure} size: {size} description: {description} link: {link} pubdate: {pubdate} free状态: 【{discount}】  ")
+                log.info(f"【crawl_homepage】 序号：{i+1}，title: {title} size: {size} description: {description}  link: {link} enclosure: {enclosure} pubdate: {pubdate} free状态: 【{discount}】  ")
 
                 # 返回对象
                 tmp_dict = {'title': title,
@@ -179,7 +184,7 @@ class RssHelper:
 
     @staticmethod
 
-    def parse_rssxml_new(url, apk_key,proxy=False):
+    def parse_rssxml_new(url, apk_key,proxy=False,site_info=None):
         """新版本刷流方法
         判断是否为m-team ，则调用m-team的api接口，否则沿用之前
 
@@ -193,7 +198,7 @@ class RssHelper:
             return RssHelper.parse_rssxml(url, proxy)
         else:
             log.info("【crawl_homepage】 是m-team网站")
-            return RssHelper.crawl_homepage(url, apk_key, proxy)
+            return RssHelper.crawl_homepage(url, apk_key, proxy,site_info)
 
     @DbPersist(_db)
     def insert_rss_torrents(self, media_info):
