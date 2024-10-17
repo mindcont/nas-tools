@@ -690,7 +690,7 @@ class BrushTask(object):
         meta_info.set_torrent_info(site=site_info.get("name"),
                                    enclosure=enclosure,
                                    size=size)
-        _, download_id, retmsg = self.downloader.download(
+        _, download_id, retmsg = self.downloader.download(  # 添加下载任务
             media_info=meta_info,
             tag=tag,
             downloader_id=downloader_id,

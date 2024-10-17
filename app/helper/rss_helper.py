@@ -157,7 +157,7 @@ class RssHelper:
                 discount = status.get('discount')
 
                 # 打印title 、enclosure、size、description、link、pubdate， discount
-                log.info(f"【crawl_homepage】 序号：{i+1}，title: {title} enclosure: {enclosure} size: {size} description: {description} link: {link} pubdate: {pubdate} discount: {discount}  ")
+                log.info(f"【crawl_homepage】 序号：{i+1}，title: {title} enclosure: {enclosure} size: {size} description: {description} link: {link} pubdate: {pubdate} free状态: 【{discount}】  ")
 
                 # 返回对象
                 tmp_dict = {'title': title,

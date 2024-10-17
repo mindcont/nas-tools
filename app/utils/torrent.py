@@ -51,7 +51,8 @@ class Torrent:
                 return None, content, "", [], errmsg
             # 解析种子文件
             files_folder, files, retmsg = self.get_torrent_files(file_path)
-            # 种子文件路径、种子内容、种子文件列表主目录、种子文件列表、错误信息
+            # 种子文件路径、种子内容、种子文件列表主目录、种子文件列表、错误信息,记录到日志
+            log.info(f"【Downloader】下载种子文件成功：{file_path} {files_folder} {files} {retmsg}")
             return file_path, content, files_folder, files, retmsg
 
         except Exception as err:
@@ -71,6 +72,7 @@ class Torrent:
         while req and req.status_code in [301, 302]:
             url = req.headers['Location']
             if url and url.startswith("magnet:"):
+                log.info(f"【Downloader】获取到磁力链接：{url}")
                 return None, url, f"获取到磁力链接：{url}"
             req = RequestUtils(
                 headers=ua,
@@ -80,6 +82,7 @@ class Torrent:
             ).get_res(url=url, allow_redirects=False)
         if req and req.status_code == 200:
             if not req.content:
+                log.info(f"【Downloader】未下载到种子数据：{url}")
                 return None, None, "未下载到种子数据"
             # 解析内容格式
             if req.text and str(req.text).startswith("magnet:"):
@@ -128,6 +131,8 @@ class Torrent:
                 # 检查是不是种子文件，如果不是仍然抛出异常
                 try:
                     bdecode(req.content)
+                    # 记录日志
+                    log.info(f"【Downloader】下载种子文件成功：{req.content}")
                 except Exception as err:
                     print(str(err))
                     return None, None, "种子数据有误，请确认链接是否正确"
