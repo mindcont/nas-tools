@@ -8,7 +8,7 @@ from app.sites.site_limiter import SiteRateLimiter
 from app.utils import RequestUtils, StringUtils
 from app.utils.commons import singleton
 from config import Config
-from app.apis import MTeamApi
+
 
 @singleton
 class Sites:
@@ -297,6 +297,7 @@ class Sites:
         :param site_id: 站点编号
         :return: 是否连通、错误信息、耗时
         """
+        from app.apis import MTeamApi
         site_info = self.get_sites(siteid=site_id)
         if not site_info:
             return False, "站点不存在", 0

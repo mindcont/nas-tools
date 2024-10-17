@@ -1,7 +1,7 @@
 import xml.dom.minidom
 
 import log
-from app.apis import MTeamApi
+
 from app.db import MainDb, DbPersist
 from app.db.models import RSSTORRENTS
 from app.utils import RssTitleUtils, StringUtils, RequestUtils, ExceptionUtils, DomUtils
@@ -106,7 +106,7 @@ class RssHelper:
         :param proxy: 是否使用代理
         :return: 种子信息列表，如为None代表Rss过期
         """
-
+        from app.apis import MTeamApi
         # 判断apikey是否存在
         if not api_key:
             log.info("【crawl_homepage】 没有配置API_KEY")
