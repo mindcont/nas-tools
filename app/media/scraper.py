@@ -7,7 +7,7 @@ import zhconv
 from requests.exceptions import RequestException
 
 import log
-from app.conf import SystemConfig, ModuleConf
+
 from app.helper import FfmpegHelper
 from app.media import Media
 from app.media.douban import DouBan
@@ -27,6 +27,7 @@ class Scraper:
     _temp_path = None
 
     def __init__(self):
+        from app.conf import SystemConfig
         self.media = Media()
         self.douban = DouBan()
         self._scraper_flag = Config().get_config('media').get("nfo_poster")
@@ -408,6 +409,7 @@ class Scraper:
         """
         下载poster.jpg并保存
         """
+        from app.conf import ModuleConf
         if not url or not out_path:
             return
         if itype:
@@ -435,6 +437,7 @@ class Scraper:
             ExceptionUtils.exception_traceback(err)
 
     def __save_nfo(self, doc, out_file):
+        from app.conf import ModuleConf
         log.info("【Scraper】正在保存NFO文件：%s" % out_file)
         xml_str = doc.toprettyxml(indent="  ", encoding="utf-8")
         # 下载到temp目录，远程则先存到temp再远程移动，本地则直接保存
