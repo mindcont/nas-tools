@@ -7,10 +7,10 @@ from datetime import datetime
 import re
 import log
 from app.helper import ChromeHelper, SiteHelper, DbHelper, RssHelper
-from app.message import Message
-from app.sites.site_limiter import SiteRateLimiter
+# from app.message import Message
+# from app.sites.site_limiter import SiteRateLimiter
 from app.utils import RequestUtils, StringUtils, PathUtils, ExceptionUtils
-from app.utils.commons import singleton
+# from app.utils.commons import singleton
 from config import Config, RMT_SUBEXT
 from urllib import parse
 
@@ -286,7 +286,7 @@ class MTeamApi:
                 ret_attr["free"] = True
                 ret_attr["downloadvolumefactor"] = 0
                 ret_attr["uploadvolumefactor"] = 1.0
-            log.info(f"【SiteConf】获取馒头种子{torrentid}属性成功: {ret_attr}")
+            log.info(f"【MTeanApi】获取馒头种子{torrentid}属性成功: {ret_attr}")
         elif res is not None:
             log.warn(f"【MTeanApi】 获取馒头种子{torrentid}属性失败，错误码：{res.status_code}")
         else:
@@ -309,14 +309,15 @@ site_info = {
 # ret= MTeamApi.check_torrent_attr(torrent_url, site_info["ua"], site_info["apikey"], )
 # print(ret)
 
-# Test
-# rss_helper = ()
-rss_url = "https://rss.m-team.cc/api/rss/fetch?audioCodecs=1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C12%2C13%2C14%2C15&categories=410%2C424%2C437%2C431%2C429%2C430%2C426%2C432%2C436%2C440%2C425%2C433%2C411%2C412%2C413&labels=7&pageSize=50&sign=cdcdefcef3a62e43f45f945d96edf43d&standards=1%2C2%2C3%2C5%2C6%2C7&t=1719150153&tkeys=ttitle%2Ctcat%2Ctsmalldescr%2Ctsize%2Ctuploader&uid=317956&videoCodecs=1%2C2%2C3%2C4%2C16%2C19%2C21"
+# #获取种子下载地址
+torrent_url = "https://kp.m-team.cc/detail/841831"
+ret = MTeamApi.get_torrent_url_by_detail_url(torrent_url, torrent_url, site_info)
+print(ret)
 
-
-ret_array = RssHelper.parse_rssxml(rss_url)
-print(ret_array[0])
-#
+#订阅地址RSS的解析获取
+# rss_url = "https://rss.m-team.cc/api/rss/fetch?audioCodecs=1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C12%2C13%2C14%2C15&categories=410%2C424%2C437%2C431%2C429%2C430%2C426%2C432%2C436%2C440%2C425%2C433%2C411%2C412%2C413&labels=7&pageSize=50&sign=cdcdefcef3a62e43f45f945d96edf43d&standards=1%2C2%2C3%2C5%2C6%2C7&t=1719150153&tkeys=ttitle%2Ctcat%2Ctsmalldescr%2Ctsize%2Ctuploader&uid=317956&videoCodecs=1%2C2%2C3%2C4%2C16%2C19%2C21"
+# ret_array = RssHelper.parse_rssxml(rss_url)
+# print(ret_array[0])
 #
 # #对 ret_array 进行处理, 从中提取出 title, enclosure,  并通过 check_torrent_attr 获取种子属性
 # if not ret_array:

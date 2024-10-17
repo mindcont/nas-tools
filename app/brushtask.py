@@ -184,6 +184,7 @@ class BrushTask(object):
         site_name = site_info.get("name")
         site_proxy = site_info.get("proxy")
         site_brush_enable = site_info.get("brush_enable")
+        # rss_url =  site_info.get("signurl") or site_info.get("rssurl") # 从站点配置中拿到rss 订阅地址
         if not site_brush_enable:
             log.error("【Brush】站点 %s 未开启刷流功能，无法刷流！" % site_name)
             return
@@ -236,7 +237,7 @@ class BrushTask(object):
             try:
                 # 种子名
                 torrent_name = res.get('title')
-                # 种子链接
+                # 种子链接，这里是种子下载地址，不是种子页面地址
                 enclosure = res.get('enclosure')
                 # 种子页面
                 page_url = res.get('link')
@@ -277,11 +278,11 @@ class BrushTask(object):
                     continue
                 # 开始下载
                 log.debug("【Brush】%s 符合条件，开始下载..." % torrent_name)
-                if self.__download_torrent(taskinfo=taskinfo,
+                if self.__download_torrent(taskinfo=taskinfo, #添加种子下载任务，更新任务数据 2024.10.17
                                            rss_rule=rss_rule,
                                            site_info=site_info,
                                            title=torrent_name,
-                                           enclosure=enclosure,
+                                           enclosure=enclosure, #种子地址
                                            size=size):
                     # 计数
                     success_count += 1
@@ -689,7 +690,8 @@ class BrushTask(object):
         meta_info = MetaInfo(title=title)
         meta_info.set_torrent_info(site=site_info.get("name"),
                                    enclosure=enclosure,
-                                   size=size)
+                                   size=size,page_url=site_info.get("signurl") or site_info.get("rssurl" ))
+        log.info("【Brush】开始添加刷流下载任务：%s" % title)
         _, download_id, retmsg = self.downloader.download(  # 添加下载任务
             media_info=meta_info,
             tag=tag,
