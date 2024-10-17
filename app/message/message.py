@@ -4,7 +4,7 @@ import time
 from enum import Enum
 
 import log
-from app.conf import ModuleConf
+
 from app.helper import DbHelper, SubmoduleHelper
 from app.message.message_center import MessageCenter
 from app.utils import StringUtils, ExceptionUtils
@@ -33,6 +33,7 @@ class Message(object):
         self.init_config()
 
     def init_config(self):
+        from app.conf import ModuleConf
         self.dbhelper = DbHelper()
         self.messagecenter = MessageCenter()
         self._domain = Config().get_domain()
@@ -777,6 +778,7 @@ class Message(object):
         """
         查询可交互的渠道
         """
+        from app.conf import ModuleConf
         return [info.get("search_type")
                 for info in ModuleConf.MESSAGE_CONF.get('client').values()
                 if info.get('search_type')]

@@ -6,7 +6,7 @@ import json
 from apscheduler.schedulers.background import BackgroundScheduler
 
 import log
-from app.conf import ModuleConf
+
 from app.conf import SystemConfig
 from app.filetransfer import FileTransfer
 from app.helper import DbHelper, ThreadHelper, SubmoduleHelper
@@ -59,6 +59,7 @@ class Downloader:
         self.init_config()
 
     def init_config(self):
+        from app.conf import ModuleConf
         self.dbhelper = DbHelper()
         self.message = Message()
         self.mediaserver = MediaServer()
@@ -546,6 +547,7 @@ class Downloader:
         """
         转移下载完成的文件，进行文件识别重命名到媒体库目录
         """
+        from app.conf import ModuleConf
         downloader_ids = [downloader_id] if downloader_id \
             else self._monitor_downloader_ids
         for downloader_id in downloader_ids:
