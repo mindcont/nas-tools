@@ -132,7 +132,7 @@ class Torrent:
                 try:
                     bdecode(req.content)
                     # 记录日志
-                    log.info(f"【Downloader】下载种子文件成功：{req.content}")
+                    log.info(f"【Downloader】下载种子文件成功")
                 except Exception as err:
                     print(str(err))
                     return None, None, "种子数据有误，请确认链接是否正确"
