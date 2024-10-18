@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch: # 增加手动触发选项
+
 jobs:
   push-to-mirror:
     runs-on: ubuntu-latest
@@ -10,16 +12,17 @@ jobs:
       - name: Clone
         run: |
           git init
-          git remote add origin https://github.com/${GITHUB_REPOSITORY}.git
+          git remote add origin https://github.com/${{ env.GITHUB_REPOSITORY }}.git
           git fetch --all
           for branch in `git branch -a | grep remotes | grep -v HEAD`; do
             git branch --track ${branch##*/} $branch
           done
         env:
           GITHUB_REPOSITORY: mindcont/nas-tools
+
       - name: Push to Coding
         run: |
-          remote_repo="https://${CODING_USERNAME}:${CODING_PASSWORD}@e.coding.net/${CODING_REPOSITORY}.git"
+          remote_repo="https://${{ secrets.CODING_USER }}:${{ secrets.CODING_PASSWORD }}@e.coding.net/${{ env.CODING_REPOSITORY }}.git"
           git remote add coding "${remote_repo}"
           git show-ref # useful for debugging
           git branch --verbose
@@ -28,6 +31,3 @@ jobs:
           git push --tags --force coding
         env:
           CODING_REPOSITORY: mindcont/nas-tools
-          CODING_USERNAME: ${{ secrets.CODING_USER }}
-          CODING_PASSWORD: ${{ secrets.CODING_PASSWORD }}
-
