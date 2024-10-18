@@ -30,4 +30,4 @@ jobs:
           git push --all --force coding
           git push --tags --force coding
         env:
-          CODING_REPOSITORY: mindcont/nas-tools
+          CODING_REPOSITORY: mindcont/home/nas-tools
