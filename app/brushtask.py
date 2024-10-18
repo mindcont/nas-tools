@@ -314,7 +314,6 @@ class BrushTask(object):
                 # 记录到错误日志
                 log.error("【Brush】%s 下载失败：%s" % (torrent_name, str(err)))
                 continue
-            log.info("【Brush】正在处理 %s " % (index))
 
         log.info("【Brush】任务 %s 本次添加了 %s 个下载" % (task_name, success_count))
 
