@@ -1,5 +1,6 @@
 import re
 import sys
+import threading
 import time
 from datetime import datetime
 
@@ -242,7 +243,7 @@ class BrushTask(object):
         # 当前站点下载任务数
         current_site_dlcount = rss_rule.get("current_site_dlcount")
         # 4、遍历种子列表， 并进行合法性判断，添加下载任务
-        for res in rss_result:
+        for index, res in enumerate(rss_result, start=1):
             try:
                 # 种子名
                 torrent_name = res.get('title')
@@ -314,11 +315,15 @@ class BrushTask(object):
                 # 记录到错误日志
                 log.error("【Brush】%s 下载失败：%s" % (torrent_name, str(err)))
                 continue
+            log.info("【Brush】正在处理 %s " % (index))
             # 延时 100毫秒
-            time.sleep(0.1)
+            threading.Thread(target=self.delayed_task)
 
         log.info("【Brush】任务 %s 本次添加了 %s 个下载" % (task_name, success_count))
 
+    def delayed_task(self):
+        # 延时 2 秒
+        time.sleep(2)
     def remove_tasks_torrents(self):
         """
         根据条件检查所有任务下载完成的种子，按条件进行删除，并更新任务数据

@@ -179,6 +179,7 @@ class RssHelper:
             return []
 
         params = {"mode": "movie", "categories": [], "visible": 1, "pageNumber": 1, "pageSize": 100}
+        params_adult = {"mode":"adult","categories":[],"visible":1,"pageNumber":1,"pageSize":100}
         res = RequestUtils(
             headers={
                 'x-api-key': api_key,
@@ -188,7 +189,7 @@ class RssHelper:
             },
             proxies=proxy,
             timeout=30
-        ).post_res(url="https://api.m-team.cc/api/torrent/search", json=params)
+        ).post_res(url="https://api.m-team.cc/api/torrent/search", json=params_adult)
         ret_array = [] # 保存结果
         if res and res.status_code == 200:
             results = res.json().get('data', {}).get("data") or []
@@ -245,8 +246,8 @@ class RssHelper:
 # ret_array = rss_helper.parse_rssxml(rss_url)
 # print(ret_array)
 
-# # 2、测试首页爬取
-# api_key = "cd8470e0-d95c-4a60-9667-c32680e1a93b"
-# ret_array_new = RssHelper.crawl_homepage("https://api.m-team.cc/api/torrent/search",api_key=api_key)
-# print(ret_array_new)
+# 2、测试首页爬取
+api_key = "cd8470e0-d95c-4a60-9667-c32680e1a93b"
+ret_array_new = RssHelper.crawl_homepage("https://api.m-team.cc/api/torrent/search",api_key=api_key)
+print(ret_array_new)
 
