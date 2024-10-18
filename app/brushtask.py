@@ -1,6 +1,5 @@
 import re
 import sys
-import threading
 import time
 from datetime import datetime
 
@@ -316,14 +315,9 @@ class BrushTask(object):
                 log.error("【Brush】%s 下载失败：%s" % (torrent_name, str(err)))
                 continue
             log.info("【Brush】正在处理 %s " % (index))
-            # 延时 100毫秒
-            threading.Thread(target=self.delayed_task)
 
         log.info("【Brush】任务 %s 本次添加了 %s 个下载" % (task_name, success_count))
 
-    def delayed_task(self):
-        # 延时 2 秒
-        time.sleep(2)
     def remove_tasks_torrents(self):
         """
         根据条件检查所有任务下载完成的种子，按条件进行删除，并更新任务数据

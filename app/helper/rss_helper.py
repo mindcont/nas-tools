@@ -1,4 +1,3 @@
-import threading
 import time
 import xml.dom.minidom
 
@@ -176,7 +175,7 @@ class RssHelper:
                 ret_array.append(tmp_dict)
 
                 # 延时 2000毫秒
-                threading.Thread(target=RssHelper.delayed_task)
+                time.sleep(2)
 
         elif res is not None:
             log.info(f"【crawl_homepage】 首页爬取，错误码：{res.status_code}")
@@ -186,10 +185,6 @@ class RssHelper:
             return  []
         return ret_array
 
-    @staticmethod
-    def delayed_task():
-        # 延时 2 秒
-        time.sleep(2)
 
     @staticmethod
 
